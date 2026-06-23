@@ -1,0 +1,22 @@
+BENCHMARK PARAMETERS:
+  S=100, K=100, T=1.0, r=0.05, sigma=0.20
+
+EUROPEAN CALL PRICING COMPARISON:
+  Black-Scholes:      $10.45
+  Monte Carlo (100k): $10.46 +/- $0.03 (95% CI)
+  MC error vs BS:     0.09%
+
+GREEKS AT THE MONEY:
+  Delta: 0.64  Gamma: 0.02  Vega: 0.38  Theta: -0.02  Rho: 0.53
+
+AMERICAN vs EUROPEAN PUT:
+  European: $5.57
+  American: $6.05
+  Early exercise premium: $0.48 (8.57%)
+
+MARKET VALIDATION (AAPL):
+  Options analyzed: 185
+  MAE vs market: $1.26
+  Mean IV: 99.78%
+  IV smile: [19.31%] to [418.50%] across strikes
+  FLAG: model systematically underprices relative to market (mean % error -53.26%)
