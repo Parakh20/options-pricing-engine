@@ -114,12 +114,13 @@ def plot_vol_smile(
     fig, ax = plt.subplots(figsize=(9, 6))
 
     for T in expiries:
-        ivs = []
+        ivs: list[float] = []
         for K in strikes:
             true_sigma = synthetic_sigma(K, T)
             price = BlackScholes(S=S, K=K, T=T, r=r, sigma=true_sigma, option_type="call").price()
             iv = iv_calc.solve(market_price=price, S=S, K=K, T=T, r=r, option_type="call")
-            ivs.append(iv)
+            if iv is not None:
+                ivs.append(iv)
         ax.plot(strikes, ivs, "o-", label=f"T={T:.2f}y")
 
     ax.axhline(realized_vol, color="gray", linestyle="--", label=f"Flat vol assumption ({realized_vol:.0%})")
@@ -188,17 +189,17 @@ def plot_american_vs_european_premium(
 ) -> str:
     """Plot the American-European put premium spread as spot price (moneyness) varies."""
     spots = np.linspace(*spot_range, n_points)
-    european_prices = []
-    american_prices = []
+    european_prices_list: list[float] = []
+    american_prices_list: list[float] = []
 
     for S in spots:
-        european_prices.append(BlackScholes(S=S, K=K, T=T, r=r, sigma=sigma, option_type="put").price())
+        european_prices_list.append(BlackScholes(S=S, K=K, T=T, r=r, sigma=sigma, option_type="put").price())
         lsm = LongstaffSchwartz(S=S, K=K, T=T, r=r, sigma=sigma, n_paths=n_paths, n_steps=n_steps, seed=seed)
         price, _ = lsm.price()
-        american_prices.append(price)
+        american_prices_list.append(price)
 
-    european_prices = np.array(european_prices)
-    american_prices = np.array(american_prices)
+    european_prices = np.array(european_prices_list)
+    american_prices = np.array(american_prices_list)
     premium = american_prices - european_prices
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
