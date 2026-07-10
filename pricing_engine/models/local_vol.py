@@ -80,7 +80,7 @@ class LocalVolModel(PricingModel):
             # Bucket paths into strike bands to avoid an O(n_paths) local_vol
             # call per path per step; a coarse per-path evaluation is used
             # here for correctness first (perf backends land in phase 2).
-            sigmas = np.array([local_vol(float(s), self.T - t) for s in S_t])
+            sigmas = np.array([local_vol(float(s), t) for s in S_t])
             Z = rng.standard_normal(self.n_paths)
             S_t = S_t * np.exp(
                 (self.r - 0.5 * sigmas**2) * dt + sigmas * np.sqrt(dt) * Z
