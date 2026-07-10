@@ -10,6 +10,7 @@ import os
 from pricing_engine.core.black_scholes import BlackScholes
 from pricing_engine.core.longstaff_schwartz import LongstaffSchwartz
 from pricing_engine.core.monte_carlo import MonteCarloPricer
+from pricing_engine.reports.model_comparison import write_report as write_model_comparison_report
 from validation.market_validation import build_validation_table
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
@@ -74,6 +75,25 @@ def main() -> None:
                 f"  FLAG: model systematically {bias_note} relative to market "
                 f"(mean % error {summary_stats['mean_pct_error']:.2f}%)"
             )
+
+        lines.append("")
+        lines.append("MODEL COMPARISON (BS vs Heston vs SABR, AAPL):")
+        # Reuses the AAPL chain already fetched above (comparison_df has the
+        # strike/T/market_price/option_type columns build_comparison_table
+        # needs) instead of a second live fetch. Heston/SABR calibration
+        # cost scales with the number of quotes (each L-BFGS-B iteration
+        # reprices every quote), so this is capped to the 8 quotes nearest
+        # the money to keep generate_summary.py's runtime bounded rather
+        # than calibrating against the full multi-hundred-quote chain.
+        atm_sample = comparison_df.reindex(
+            comparison_df["strike"].sub(summary_stats["spot"]).abs().sort_values().index
+        ).head(8)
+        comparison_csv_path = os.path.join(RESULTS_DIR, "model_comparison.csv")
+        write_model_comparison_report(
+            atm_sample, S=summary_stats["spot"], r=summary_stats["risk_free_rate"], out_path=comparison_csv_path,
+        )
+        lines.append(f"  Calibrated Heston + SABR against {len(atm_sample)} ATM-nearest quotes.")
+        lines.append(f"  Full comparison saved to {comparison_csv_path}")
     except (ConnectionError, TimeoutError, OSError) as network_error:
         lines.append(f"  Market validation skipped (no network access): {network_error}")
 

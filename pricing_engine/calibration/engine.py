@@ -12,6 +12,7 @@ Supports three optimizers:
 
 from __future__ import annotations
 
+import inspect
 from typing import Any
 
 import numpy as np
@@ -38,12 +39,20 @@ class CalibrationEngine:
         quotes: list[MarketQuote],
     ) -> np.ndarray:
         params = dict(zip(param_names, param_values))
+        # Most models take a spot price as `S`, but SABRModel takes a
+        # forward price as `F` instead. Inspect the constructor so this
+        # engine can calibrate either without a model-specific branch;
+        # MarketQuote only carries `S`, which is used as the forward price
+        # for models with no `S` parameter (consistent with how callers
+        # price SABR off spot-as-forward elsewhere, e.g. the model
+        # comparison report).
+        spot_kwarg = "S" if "S" in inspect.signature(model_cls).parameters else "F"
         errors = []
         for quote in quotes:
             try:
                 model = model_cls(
-                    S=quote.S, K=quote.K, T=quote.T, r=quote.r, option_type=quote.option_type,
-                    **params,
+                    **{spot_kwarg: quote.S}, K=quote.K, T=quote.T, r=quote.r,
+                    option_type=quote.option_type, **params,
                 )
                 errors.append(model.price() - quote.market_price)
             except ValueError:
