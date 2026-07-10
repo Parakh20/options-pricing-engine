@@ -25,7 +25,10 @@ class BlackScholesModel(PricingModel):
         return self._pricer().price()
 
     def greeks(self) -> dict[str, float]:
-        return self._pricer().all_greeks()
+        raw_greeks = self._pricer().all_greeks()
+        # BlackScholes.all_greeks() may return numpy.float64 values from scipy.stats
+        # (norm.cdf, norm.pdf). Cast to float for consistent return type.
+        return {k: float(v) for k, v in raw_greeks.items()}
 
     @classmethod
     def calibrate(
@@ -35,6 +38,11 @@ class BlackScholesModel(PricingModel):
         just implied-vol inversion against a single market price, reusing
         ImpliedVolCalculator. market_data must expose S, K, T, r, option_type,
         market_price attributes.
+
+        Raises:
+            ValueError: If the implied volatility solver does not converge,
+                e.g. when the market price is below intrinsic value or
+                otherwise unreachable within the solver's bracket.
         """
         from pricing_engine.core.implied_vol import ImpliedVolCalculator
 
@@ -47,6 +55,12 @@ class BlackScholesModel(PricingModel):
             r=market_data.r,
             option_type=market_data.option_type,
         )
+        if sigma is None:
+            raise ValueError(
+                "Could not calibrate BlackScholesModel: implied vol solver did not converge. "
+                "This typically occurs when the market price is below intrinsic value or "
+                "otherwise unreachable within the solver bracket."
+            )
         return cls(
             S=market_data.S,
             K=market_data.K,
