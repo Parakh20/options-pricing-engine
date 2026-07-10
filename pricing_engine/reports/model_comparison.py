@@ -47,6 +47,12 @@ def build_comparison_table(chain: pd.DataFrame, S: float, r: float) -> pd.DataFr
             market_price=quote.market_price, S=S, K=quote.K, T=quote.T, r=r,
             option_type=quote.option_type,
         )
+        if implied is None:
+            raise ValueError(
+                f"Could not solve implied vol for strike {quote.K}: market price "
+                f"{quote.market_price} is below intrinsic value or otherwise "
+                "unreachable within the solver bracket."
+            )
 
         bs_price = BlackScholesModel(
             S=S, K=quote.K, T=quote.T, r=r, sigma=implied, option_type=quote.option_type,

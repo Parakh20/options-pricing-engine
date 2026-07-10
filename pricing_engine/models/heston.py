@@ -104,12 +104,22 @@ class HestonModel(PricingModel):
         down_v = HestonModel(**{**self.__dict__, "v0": self.v0 - bump_v})
         vega = (up_v.price() - down_v.price()) / (2 * bump_v) * 0.01
 
-        return {"delta": delta, "vega": vega}
+        # Finite-difference calcs above may yield numpy.float64 depending on
+        # dtype propagation through price(); cast to float for consistent
+        # return type.
+        return {"delta": float(delta), "vega": float(vega)}
 
     @classmethod
-    def calibrate(
+    def calibrate(  # type: ignore[override]
         cls, market_data: Any, initial_guess: dict[str, float]
-    ) -> "HestonModel":
+    ) -> dict[str, float]:
+        """Returns the calibrated parameter dict (not a model instance) —
+        see CalibrationEngine.calibrate for why: market_data here is a list
+        of quotes across strikes, not a single contract, so there is no
+        single model instance to construct. Callers build a model per-quote
+        from the result. This intentionally narrows PricingModel.calibrate's
+        declared return type; see base.PricingModel.calibrate docstring.
+        """
         from pricing_engine.calibration.engine import CalibrationEngine
 
         return CalibrationEngine().calibrate(cls, market_data, initial_guess)

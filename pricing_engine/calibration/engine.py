@@ -13,7 +13,6 @@ Supports three optimizers:
 from __future__ import annotations
 
 import inspect
-from typing import Any
 
 import numpy as np
 from scipy.optimize import differential_evolution, least_squares, minimize

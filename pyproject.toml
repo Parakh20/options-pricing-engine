@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Institutional-grade quantitative derivatives pricing and risk platform"
 requires-python = ">=3.11"
 dependencies = [
-    "numpy",
+    # numpy>=2.1's bundled type stubs use PEP 695 `type` statement syntax,
+    # which mypy can only parse when [tool.mypy] python_version >= 3.12.
+    # This project supports Python 3.11+ (see requires-python above), so
+    # numpy is capped below that stub syntax bump rather than raising
+    # mypy's target and dropping 3.11 support.
+    "numpy<2.1",
     "scipy",
     "pandas",
     "yfinance",

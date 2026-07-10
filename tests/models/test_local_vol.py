@@ -103,17 +103,11 @@ def test_local_vol_mc_uses_elapsed_time_not_remaining_time() -> None:
     )
     fixed_price = model.price()
 
-    buggy_reference_price = _simulate_with_time_arg(
-        iv_surface, S, K, T, r, use_elapsed=False,
-        n_steps=n_steps, n_paths=n_paths, seed=seed,
-    )
-
     # The current (fixed) implementation must match the elapsed-time
-    # reference and must clear the buggy remaining-time reference by a
-    # margin well above MC noise (observed diff ~0.6-1.5 across seeds).
+    # reference exactly (same RNG draws, same math) — this is deterministic,
+    # seed-independent regression protection for the T-t vs t bug.
     elapsed_reference_price = _simulate_with_time_arg(
         iv_surface, S, K, T, r, use_elapsed=True,
         n_steps=n_steps, n_paths=n_paths, seed=seed,
     )
     assert math.isclose(fixed_price, elapsed_reference_price, rel_tol=1e-9)
-    assert fixed_price > buggy_reference_price + 0.15

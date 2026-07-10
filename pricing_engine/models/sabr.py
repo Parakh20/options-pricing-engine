@@ -77,12 +77,24 @@ class SABRModel(PricingModel):
 
     def greeks(self) -> dict[str, float]:
         sigma = self.implied_vol()
-        return BlackScholes(self.F, self.K, self.T, self.r, sigma, self.option_type).all_greeks()
+        raw_greeks = BlackScholes(
+            self.F, self.K, self.T, self.r, sigma, self.option_type
+        ).all_greeks()
+        # BlackScholes.all_greeks() may return numpy.float64 values from scipy.stats
+        # (norm.cdf, norm.pdf). Cast to float for consistent return type.
+        return {k: float(v) for k, v in raw_greeks.items()}
 
     @classmethod
-    def calibrate(
+    def calibrate(  # type: ignore[override]
         cls, market_data: Any, initial_guess: dict[str, float]
-    ) -> "SABRModel":
+    ) -> dict[str, float]:
+        """Returns the calibrated parameter dict (not a model instance) —
+        see CalibrationEngine.calibrate for why: market_data here is a list
+        of quotes across strikes, not a single contract, so there is no
+        single model instance to construct. Callers build a model per-quote
+        from the result. This intentionally narrows PricingModel.calibrate's
+        declared return type; see base.PricingModel.calibrate docstring.
+        """
         from pricing_engine.calibration.engine import CalibrationEngine
 
         return CalibrationEngine().calibrate(cls, market_data, initial_guess)

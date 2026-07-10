@@ -8,21 +8,33 @@ against a live AAPL options chain for real-market accuracy.
 
 ## Models implemented
 
-- **Black-Scholes-Merton** (`core/black_scholes.py`) — closed-form European
-  option pricing with all five analytic Greeks (delta, gamma, vega, theta,
-  rho), verified against put-call parity to within `1e-6`.
-- **Monte Carlo** (`core/monte_carlo.py`) — GBM path simulation for European
-  and arithmetic Asian (fixed- and floating-strike) options, with
+- **Black-Scholes-Merton** (`pricing_engine/core/black_scholes.py`) — closed-form
+  European option pricing with all five analytic Greeks (delta, gamma, vega,
+  theta, rho), verified against put-call parity to within `1e-6`.
+- **Monte Carlo** (`pricing_engine/core/monte_carlo.py`) — GBM path simulation
+  for European and arithmetic Asian (fixed- and floating-strike) options, with
   **antithetic variates** and **control variates** for variance reduction.
-- **Longstaff-Schwartz (LSM)** (`core/longstaff_schwartz.py`) — regression-based
-  American put pricing with a selectable **Laguerre polynomial** or plain
-  polynomial basis, recovering the early-exercise boundary.
-- **Implied volatility** (`core/implied_vol.py`) — **Newton-Raphson** inversion
-  of the Black-Scholes price with an automatic **bisection fallback**, plus a
-  volatility-surface builder from an options chain.
-- **Live market data** (`data/market_data.py`) — yfinance-backed spot price,
-  options chain, risk-free rate (`^IRX` 3-month T-bill proxy), and historical
-  volatility, with on-disk caching (1-hour freshness window).
+- **Longstaff-Schwartz (LSM)** (`pricing_engine/core/longstaff_schwartz.py`) —
+  regression-based American put pricing with a selectable **Laguerre
+  polynomial** or plain polynomial basis, recovering the early-exercise
+  boundary.
+- **Implied volatility** (`pricing_engine/core/implied_vol.py`) —
+  **Newton-Raphson** inversion of the Black-Scholes price with an automatic
+  **bisection fallback**, plus a volatility-surface builder from an options
+  chain.
+- **Live market data** (`pricing_engine/market/market_data.py`) —
+  yfinance-backed spot price, options chain, risk-free rate (`^IRX` 3-month
+  T-bill proxy), and historical volatility, with on-disk caching (1-hour
+  freshness window).
+- **SABR** (`pricing_engine/models/sabr.py`) — stochastic-volatility model
+  priced via the Hagan et al. (2002) lognormal implied-vol approximation.
+- **Heston** (`pricing_engine/models/heston.py`) — stochastic-volatility
+  model with mean-reverting variance, priced by Monte Carlo.
+- **Local volatility** (`pricing_engine/models/local_vol.py`) — Dupire local
+  vol derived from an implied-vol surface, priced by Monte Carlo.
+- **Calibration engine** (`pricing_engine/calibration/engine.py`) —
+  model-agnostic parameter fitting (Levenberg-Marquardt, bounded L-BFGS-B, or
+  differential evolution) against a set of market quotes.
 
 ## Results
 
@@ -84,13 +96,17 @@ MARKET VALIDATION (AAPL):
 ## Project structure
 
 ```
-core/                  Black-Scholes, Monte Carlo, Longstaff-Schwartz, implied vol
-data/market_data.py    yfinance-backed live market data with caching
-validation/            MC convergence + real AAPL market validation
-visualisation/plots.py Greeks surfaces, vol smile, convergence, exercise boundary, premium
-notebooks/             End-to-end walkthrough notebook
-results/               Generated plots, CSVs, and summary.txt
-generate_summary.py    Produces results/summary.txt from all models
+pricing_engine/
+  core/                 Black-Scholes, Monte Carlo, Longstaff-Schwartz, implied vol
+  market/market_data.py yfinance-backed live market data with caching
+  models/               SABR, Heston, LocalVol (PricingModel-conforming wrappers)
+  calibration/          Model-agnostic calibration engine + market quote type
+  reports/              Cross-model comparison reports
+  visualization/plots.py Greeks surfaces, vol smile, convergence, exercise boundary, premium
+validation/             MC convergence + real AAPL market validation
+notebooks/              End-to-end walkthrough notebook
+results/                Generated plots, CSVs, and summary.txt
+generate_summary.py     Produces results/summary.txt from all models
 ```
 
 ## Install and run
@@ -99,14 +115,14 @@ generate_summary.py    Produces results/summary.txt from all models
 pip install -r requirements.txt
 
 # Run any module standalone (each has its own smoke test):
-python3 core/black_scholes.py
-python3 core/monte_carlo.py
-python3 core/longstaff_schwartz.py
-python3 core/implied_vol.py
-python3 data/market_data.py
+python3 -m pricing_engine.core.black_scholes
+python3 -m pricing_engine.core.monte_carlo
+python3 -m pricing_engine.core.longstaff_schwartz
+python3 -m pricing_engine.core.implied_vol
+python3 -m pricing_engine.market.market_data
 python3 validation/convergence.py
 python3 validation/market_validation.py    # requires network access
-python3 visualisation/plots.py
+python3 -m pricing_engine.visualization.plots
 
 # Generate the consolidated benchmark report:
 python3 generate_summary.py

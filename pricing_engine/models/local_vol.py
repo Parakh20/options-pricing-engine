@@ -59,6 +59,9 @@ def build_local_vol_surface(
 
 @dataclass
 class LocalVolModel(PricingModel):
+    # NOTE: _simulate_terminal_prices is O(n_paths * n_steps) with a scalar
+    # local_vol() call per path per step, so the 50_000-path default can be
+    # slow (multi-second) — see Phase-2 follow-up for vectorizing local_vol.
     S: float
     K: float
     T: float
