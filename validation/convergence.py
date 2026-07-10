@@ -16,12 +16,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 try:
-    from core.black_scholes import BlackScholes
-    from core.monte_carlo import MonteCarloPricer
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.monte_carlo import MonteCarloPricer
 except ImportError:  # pragma: no cover - fallback for direct script execution
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from core.black_scholes import BlackScholes
-    from core.monte_carlo import MonteCarloPricer
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.monte_carlo import MonteCarloPricer
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
 SIMULATION_SIZES = [1_000, 5_000, 10_000, 50_000, 100_000]

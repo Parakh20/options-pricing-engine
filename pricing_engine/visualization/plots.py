@@ -14,16 +14,18 @@ import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 (registers 3D projection)
 
 try:
-    from core.black_scholes import BlackScholes
-    from core.longstaff_schwartz import LongstaffSchwartz
-    from core.implied_vol import ImpliedVolCalculator
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.longstaff_schwartz import LongstaffSchwartz
+    from pricing_engine.core.implied_vol import ImpliedVolCalculator
 except ImportError:  # pragma: no cover - fallback for direct script execution
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from core.black_scholes import BlackScholes
-    from core.longstaff_schwartz import LongstaffSchwartz
-    from core.implied_vol import ImpliedVolCalculator
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.longstaff_schwartz import LongstaffSchwartz
+    from pricing_engine.core.implied_vol import ImpliedVolCalculator
 
-RESULTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
+RESULTS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "results"
+)
 GREEK_NAMES = ["price", "delta", "gamma", "vega", "theta", "rho"]
 
 

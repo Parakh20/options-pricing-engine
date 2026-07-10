@@ -38,8 +38,8 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-# Project root is the parent of this file's parent directory (data/..).
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Project root is three levels up from this file (pricing_engine/market/..).
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 CACHE_DIR = PROJECT_ROOT / "results" / "cached_chains"
 CACHE_STALENESS_SECONDS = 3600  # 1 hour
 TRADING_DAYS_PER_YEAR = 252
@@ -339,7 +339,7 @@ if __name__ == "__main__":
         )
         print(
             "Code structure was not exercised against live data in this run. "
-            "Run `python3 -c \"import ast; ast.parse(open('data/market_data.py').read())\"` "
+            "Run `python3 -c \"import ast; ast.parse(open('pricing_engine/market/market_data.py').read())\"` "
             "to confirm the module is syntactically valid, or re-run this script "
             "with network access to perform a full smoke test."
         )

@@ -17,14 +17,24 @@ import numpy as np
 import pandas as pd
 
 try:
-    from core.black_scholes import BlackScholes
-    from core.implied_vol import ImpliedVolCalculator
-    from data.market_data import get_historical_vol, get_options_chain, get_risk_free_rate, get_spot_price
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.implied_vol import ImpliedVolCalculator
+    from pricing_engine.market.market_data import (
+        get_historical_vol,
+        get_options_chain,
+        get_risk_free_rate,
+        get_spot_price,
+    )
 except ImportError:  # pragma: no cover - fallback for direct script execution
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from core.black_scholes import BlackScholes
-    from core.implied_vol import ImpliedVolCalculator
-    from data.market_data import get_historical_vol, get_options_chain, get_risk_free_rate, get_spot_price
+    from pricing_engine.core.black_scholes import BlackScholes
+    from pricing_engine.core.implied_vol import ImpliedVolCalculator
+    from pricing_engine.market.market_data import (
+        get_historical_vol,
+        get_options_chain,
+        get_risk_free_rate,
+        get_spot_price,
+    )
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "results")
 TICKER = "AAPL"

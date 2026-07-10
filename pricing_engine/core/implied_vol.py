@@ -17,7 +17,7 @@ methods:
 
 Important scaling note
 -----------------------
-``BlackScholes.vega()`` in ``core/black_scholes.py`` returns vega scaled
+``BlackScholes.vega()`` in ``pricing_engine/core/black_scholes.py`` returns vega scaled
 *per 1% (0.01) move in volatility* (i.e. ``raw_vega * 0.01``), matching
 trading-desk Greek conventions. The Newton-Raphson update step,
 
@@ -38,13 +38,13 @@ import math
 import pandas as pd
 
 try:
-    from core.black_scholes import BlackScholes
+    from pricing_engine.core.black_scholes import BlackScholes
 except ImportError:  # pragma: no cover - fallback when run as a standalone script
     import os
     import sys
 
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from core.black_scholes import BlackScholes
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from pricing_engine.core.black_scholes import BlackScholes
 
 
 class ImpliedVolCalculator:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from core.black_scholes import BlackScholes
-from core.longstaff_schwartz import LongstaffSchwartz
+from pricing_engine.core.black_scholes import BlackScholes
+from pricing_engine.core.longstaff_schwartz import LongstaffSchwartz
 
 
 def test_american_put_premium_over_european(benchmark_params: dict[str, float]) -> None:

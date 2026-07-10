@@ -60,10 +60,10 @@ import pandas as pd
 from numpy.polynomial import laguerre as np_laguerre
 
 try:
-    from core.black_scholes import BlackScholes
+    from pricing_engine.core.black_scholes import BlackScholes
 except ImportError:  # pragma: no cover - fallback for running as a standalone script
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from core.black_scholes import BlackScholes
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from pricing_engine.core.black_scholes import BlackScholes
 
 
 @dataclass

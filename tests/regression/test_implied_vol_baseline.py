@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import math
 
-from core.black_scholes import BlackScholes
-from core.implied_vol import ImpliedVolCalculator
+from pricing_engine.core.black_scholes import BlackScholes
+from pricing_engine.core.implied_vol import ImpliedVolCalculator
 
 
 def test_recovers_input_volatility(benchmark_params: dict[str, float]) -> None:

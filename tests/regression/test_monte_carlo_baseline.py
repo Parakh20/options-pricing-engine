@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import math
 
-from core.black_scholes import BlackScholes
-from core.monte_carlo import MonteCarloPricer
+from pricing_engine.core.black_scholes import BlackScholes
+from pricing_engine.core.monte_carlo import MonteCarloPricer
 
 
 def test_european_call_converges_to_black_scholes(benchmark_params: dict[str, float]) -> None:

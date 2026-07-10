@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 
-from core.black_scholes import BlackScholes, check_put_call_parity
+from pricing_engine.core.black_scholes import BlackScholes, check_put_call_parity
 
 
 def test_call_price_matches_known_benchmark(benchmark_params: dict[str, float]) -> None:

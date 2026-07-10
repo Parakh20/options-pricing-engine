@@ -50,13 +50,13 @@ import numpy as np
 import pandas as pd
 
 try:
-    from core.black_scholes import BlackScholes
-except ImportError:  # pragma: no cover - fallback for `python3 core/monte_carlo.py`
+    from pricing_engine.core.black_scholes import BlackScholes
+except ImportError:  # pragma: no cover - fallback for `python3 pricing_engine/core/monte_carlo.py`
     import os
     import sys
 
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from core.black_scholes import BlackScholes
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from pricing_engine.core.black_scholes import BlackScholes
 
 
 @dataclass

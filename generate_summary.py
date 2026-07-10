@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import os
 
-from core.black_scholes import BlackScholes
-from core.longstaff_schwartz import LongstaffSchwartz
-from core.monte_carlo import MonteCarloPricer
+from pricing_engine.core.black_scholes import BlackScholes
+from pricing_engine.core.longstaff_schwartz import LongstaffSchwartz
+from pricing_engine.core.monte_carlo import MonteCarloPricer
 from validation.market_validation import build_validation_table
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
