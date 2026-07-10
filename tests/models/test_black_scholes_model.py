@@ -48,3 +48,23 @@ def test_calibrate_raises_on_non_convergence() -> None:
     # The solver should fail to converge because market_price < intrinsic value
     with pytest.raises(ValueError, match="Could not calibrate BlackScholesModel"):
         BlackScholesModel.calibrate(market_data, initial_guess={})
+
+
+def test_calibrate_recovers_implied_vol_on_valid_price() -> None:
+    """Success path: calibrate() should return a BlackScholesModel whose
+    price matches the market_price it was calibrated from.
+    """
+
+    @dataclass
+    class MockMarketData:
+        S: float = 100.0
+        K: float = 100.0
+        T: float = 1.0
+        r: float = 0.05
+        option_type: str = "call"
+        market_price: float = 10.4506  # matches sigma=0.20 at these params
+
+    calibrated = BlackScholesModel.calibrate(MockMarketData(), initial_guess={})
+    assert isinstance(calibrated, BlackScholesModel)
+    assert math.isclose(calibrated.sigma, 0.20, abs_tol=1e-3)
+    assert math.isclose(calibrated.price(), 10.4506, rel_tol=1e-3)
