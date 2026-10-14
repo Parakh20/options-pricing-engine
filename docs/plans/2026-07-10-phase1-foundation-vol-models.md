@@ -1,6 +1,5 @@
 # Phase 1: Foundation + Volatility Models Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Restructure the repo into a `pricing_engine/` package with a pytest+CI safety net, then add a `PricingModel` abstraction with SABR, Heston, and Dupire Local Volatility models plus a calibration engine, and produce a BS-vs-Heston-vs-LocalVol-vs-SABR comparison report against the cached AAPL chain.
 
