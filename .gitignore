@@ -8,3 +8,6 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 .venv/
+
+# Runtime yfinance cache (timestamped, regenerated on demand)
+results/cached_chains/
