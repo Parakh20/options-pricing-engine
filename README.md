@@ -1,5 +1,8 @@
 # Options Pricing Engine
 
+[![CI](https://github.com/Parakh20/options-pricing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Parakh20/options-pricing-engine/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A standalone quantitative finance engine implementing closed-form Black-Scholes
 pricing, Monte Carlo simulation (European and Asian payoffs, with variance
 reduction), and the Longstaff-Schwartz Method for American option pricing.
@@ -36,9 +39,40 @@ against a live AAPL options chain for real-market accuracy.
   model-agnostic parameter fitting (Levenberg-Marquardt, bounded L-BFGS-B, or
   differential evolution) against a set of market quotes.
 
+## Quick start
+
+Requires Python 3.11+.
+
+```bash
+git clone https://github.com/Parakh20/options-pricing-engine.git
+cd options-pricing-engine
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt     # editable install of pricing_engine + dev tools + jupyter
+
+pytest                              # full test suite
+python3 generate_summary.py         # regenerates results/summary.txt (AAPL section needs network)
+```
+
+## Tests
+
+```bash
+ruff check pricing_engine tests
+mypy pricing_engine
+pytest --cov=pricing_engine --cov-report=term-missing --cov-fail-under=80
+```
+
+There are 109 tests: unit tests per module, regression baselines for the core
+pricers, and tests for model validation and calibration. Coverage is 85% with
+an 80% gate. `market_data.py` (live yfinance) and `visualization/plots.py` are excluded from
+the coverage gate. The suite is Monte Carlo heavy and takes several minutes.
+CI runs ruff, mypy and pytest on every push.
+
 ## Results
 
-Benchmark parameters: `S=100, K=100, T=1.0, r=0.05, sigma=0.20`.
+Output of `python3 generate_summary.py`. The AAPL section comes from a live
+options chain fetched on 2026-06-23, so re-running it gives different market
+numbers. Benchmark parameters: `S=100, K=100, T=1.0, r=0.05, sigma=0.20`.
 
 ```
 BENCHMARK PARAMETERS:
@@ -104,16 +138,16 @@ pricing_engine/
   reports/              Cross-model comparison reports
   visualization/plots.py Greeks surfaces, vol smile, convergence, exercise boundary, premium
 validation/             MC convergence + real AAPL market validation
-notebooks/              End-to-end walkthrough notebook
+notebooks/              End-to-end walkthrough notebook (run from notebooks/: jupyter notebook full_analysis.ipynb)
+tests/                  pytest suite: core, models, calibration, reports, regression baselines
 results/                Generated plots, CSVs, and summary.txt
+docs/                   Design spec and implementation plan
 generate_summary.py     Produces results/summary.txt from all models
 ```
 
-## Install and run
+## Running modules
 
 ```bash
-pip install -r requirements.txt
-
 # Run any module standalone (each has its own smoke test):
 python3 -m pricing_engine.core.black_scholes
 python3 -m pricing_engine.core.monte_carlo
@@ -151,3 +185,7 @@ python3 generate_summary.py
   under a poor initial guess. The solver automatically falls back to bisection
   on `[0.001, 5.0]`, slower but guaranteed to converge given a bracketing
   root, whenever Newton-Raphson fails.
+
+## License
+
+[MIT](LICENSE) © 2026 Parakh Sharma
